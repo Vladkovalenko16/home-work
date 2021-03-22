@@ -7,46 +7,45 @@ public class Game {
     public static final int MAX_NUMBER = 6;
     public static final int MAX_POINT = 2;
 
-    public static void main(String [] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Будем угадывать числа сначала я угадываю потом ты.");
         System.out.println("Играем до " + MAX_POINT + " очков.");
         System.out.println(("Загадывать числа от " + MIN_NUMBER + " до " + MAX_NUMBER));
         int personsPoint = 0;
         int computersPoint = 0;
-        //do {
-        for (int turn = 1; personsPoint != MAX_POINT && computersPoint != MAX_POINT; turn++) {
+        int turn = 1;
+        while (personsPoint != MAX_POINT && computersPoint != MAX_POINT) {
             int numberPerson;
             int numberComputer;
-            if (turn % 2 != 0) {
-                numberPerson = readInt(in, "Введи свое число");
-                numberComputer = generateRandomNumber();
-                System.out.println("Вот мое число " +numberComputer);
-                if (numberComputer == numberPerson) {
-                    computersPoint++;
-                    System.out.println(" Я угадал.");
-                }
-            }
-            if (turn % 2 == 0) {
+            if (turn == 2) {
                 System.out.println("Я загодал число.");
-                numberPerson = readInt(in, "Введи свое число");
-                numberComputer = generateRandomNumber();
-                System.out.println("Вот мое число " + numberComputer);
-                if (numberComputer == numberPerson) {
-                    personsPoint++;
-                    System.out.println(" Ты угадал.");
-                }
+            }
+            numberPerson = readInt(in, "Введи свое число");
+            numberComputer = generateRandomNumber();
+            System.out.println("Вот мое число " + numberComputer);
+            if (turn == 1 && numberComputer == numberPerson) {
+                computersPoint++;
+                System.out.println(" Я угадал.");
+                turn++;
+                System.out.println("Счет " + computersPoint + ":" + personsPoint);
+                continue;
+            }
+            if (turn == 2 && numberComputer == numberPerson) {
+                personsPoint++;
+                System.out.println(" Ты угадал.");
+                turn--;
             }
             System.out.println("Счет " + computersPoint + ":" + personsPoint);
-        } //while (personsPoint != MAX_POINT && computersPoint != MAX_POINT);
+        }
         if (computersPoint == MAX_POINT) {
             System.out.println("Я победил)) LOL.");
-        }else {
+        } else {
             System.out.println(("Поздравляю."));
         }
     }
 
-    public static int generateRandomNumber(){
+    public static int generateRandomNumber() {
         return (int) Math.round((Math.random() * (MAX_NUMBER - MIN_NUMBER) + MIN_NUMBER));
     }
 
@@ -63,10 +62,10 @@ public class Game {
                 } else {
                     System.out.println("Введи число от " + MIN_NUMBER + " до " + MAX_NUMBER);
                 }
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 System.out.println("Нужно целое число");
             }
-        }while (!hasNumber);
+        } while (!hasNumber);
         return number;
     }
 }
