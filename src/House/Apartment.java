@@ -5,7 +5,7 @@ public class Apartment {
     public int floorsNumber;
     public boolean checkingResident = true;
 
-     public Apartment (int apartmentsNumber, int floorsNumber, String[] rooms){
+     public Apartment (int apartmentsNumber, int floorsNumber, Room[] rooms){
          this.apartmentsNumber = apartmentsNumber;
          this.floorsNumber = floorsNumber;
 
