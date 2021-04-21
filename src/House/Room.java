@@ -8,9 +8,11 @@ public class Room {
         this.roomsName = roomsName;
         this.roomsSquare = roomsSquare;
     }
-    public String getRoomsName (){
+
+    public String getRoomsName() {
         return roomsName;
     }
+
     public double getRoomsSquare() {
         return roomsSquare;
     }

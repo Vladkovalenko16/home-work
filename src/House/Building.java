@@ -3,7 +3,7 @@ package House;
 import java.util.Arrays;
 
 public class Building {
-    private static final double PRISE_PER_METER = 2;
+    public static final double PRISE_PER_METER = 2;
     public Apartment[] apartments;
 
     public Building() {
@@ -75,19 +75,20 @@ public class Building {
     }
 
     public Resident[] moveInResidents(Resident[] residents) {
-        apartments = sortsApartmentsBySquare(apartments);
-        residents = sortResidentsByMoney(residents);
+        Apartment[] sortingApartments = sortsApartmentsBySquare(apartments);
+        Resident[] sortingResidents = sortResidentsByMoney(residents);
         int i = 0;
-        for (Apartment apartment : apartments) {
-            if (apartment.isCheckingResident()) {
-                if (i >= residents.length) {
+        for (Apartment apartment : sortingApartments) {
+            if (apartment.getResident() == null) {
+                if (i >= sortingResidents.length) {
                     break;
                 }
-                apartment.moveInResident(residents[i]);
+                apartment.moveInResident(sortingResidents[i]);
                 i++;
             }
         }
-        return residents;
+
+        return Arrays.copyOfRange(sortingResidents, i, sortingResidents.length);
     }
 
     public void addsApartment(Apartment apartment) {
@@ -96,18 +97,19 @@ public class Building {
 
     }
 
-    public double priseOfApartment (double square){
+    public double priseOfApartment(double square) {
         return square * PRISE_PER_METER;
     }
-    public double collectMoney (){
+
+    public double collectMoney() {
         double money = 0;
         for (Apartment apartment : apartments) {
-            if (apartment.getResident() != null){
-                if (apartment.getResident().getMoney() < priseOfApartment(apartment.apartmentsSquare())){
+            if (apartment.getResident() != null) {
+                if (apartment.getResident().getMoney() < priseOfApartment(apartment.apartmentsSquare())) {
                     money += apartment.getResident().getMoney();
                     apartment.getResident().setMoney(apartment.getResident().getMoney());
                     apartment.moveOutResident();
-                }else{
+                } else {
                     apartment.getResident().setMoney(priseOfApartment(apartment.apartmentsSquare()));
                     money += priseOfApartment(apartment.apartmentsSquare());
                 }
