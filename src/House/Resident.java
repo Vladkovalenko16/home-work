@@ -20,6 +20,5 @@ public class Resident {
     public double setMoney(double money) {
         this.money = this.money - money;
         return this.money;
-
     }
 }

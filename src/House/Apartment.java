@@ -1,19 +1,26 @@
 package House;
 
-public class Apartment {
-    private int Number;
-    private int floorNumber;
-    private Room[] rooms;
-    private Resident resident;
+import java.util.ArrayList;
 
-    public Apartment(int apartmentsNumber, int floorsNumber, Room[] rooms) {
-        this.Number = apartmentsNumber;
+public class Apartment {
+    private final int number;
+    private final int floorNumber;
+    private final ArrayList<Room> rooms;
+    private Resident resident;
+    private boolean tryResident;
+
+    public Apartment(int apartmentsNumber, int floorsNumber, ArrayList<Room> rooms) {
+        this.number = apartmentsNumber;
         this.floorNumber = floorsNumber;
         this.rooms = rooms;
     }
 
     public int getNumber() {
-        return Number;
+        return number;
+    }
+
+    public boolean getTryResident(){
+        return tryResident;
     }
 
     public int getFloorNumber() {
@@ -21,7 +28,7 @@ public class Apartment {
     }
 
 
-    public Room[] getRooms() {
+    public ArrayList<Room> getRooms() {
         return rooms;
     }
 
@@ -31,29 +38,32 @@ public class Apartment {
 
     public double apartmentsSquare() {
         double square = 0;
-        for (int i = 0; i < rooms.length; i++) {
-            square = square + rooms[i].getRoomsSquare();
+        for (int i = 0; i < rooms.size(); i++) {
+            square = square + rooms.get(i).getRoomsSquare();
         }
         return square;
     }
 
-    public void moveInResident(Resident resident) {
-        if (this.resident == null) {
+    public boolean moveInResident(Resident resident) {
+        if (!tryResident) {
             Main.print("Заселили " + resident.getName());
             this.resident = resident;
+            tryResident = true;
         } else {
             Main.print("Квартира занята");
         }
+        return tryResident;
 
     }
 
-    public void moveOutResident() {
-        if (this.resident != null) {
-            Main.print("Выселели " + resident.getName());
-            this.resident = null;
+    public boolean moveOutResident() {
+        if (tryResident) {
+            Main.print("Выселили " + resident.getName());
+            tryResident = false;
         } else {
             Main.print("Квартира пуста");
         }
+        return tryResident;
     }
 
 

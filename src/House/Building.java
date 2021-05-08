@@ -1,27 +1,25 @@
 package House;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Building {
     public static final double PRISE_PER_METER = 2;
-    public Apartment[] apartments;
+    public ArrayList<Apartment> apartments;
 
     public Building() {
-        apartments = new Apartment[0];
+        apartments = new ArrayList<>();
     }
 
-    public Building(Apartment[] apartments) {
+    public Building(ArrayList<Apartment> apartments) {
         this.apartments = apartments;
     }
 
-    public String[] returnResidentsName() {
-        String[] residents = new String[0];
-        int i = 0;
+    public ArrayList<String> returnResidentsName() {
+        ArrayList<String> residents = new ArrayList<>();
         for (Apartment apartment : apartments) {
-            if (apartment.getResident() != null) {
-                i++;
-                residents = Arrays.copyOf(residents, i);
-                residents[i - 1] = apartment.getResident().getName();
+            if (apartment.getTryResident()) {
+                residents.add(apartment.getResident().getName());
             }
         }
         return residents;
@@ -29,72 +27,65 @@ public class Building {
 
 
     public String lookingResidentInApartment(int numberOfApartment) {
-        String residentName = null;
-        for (Apartment apartment : apartments)
-            try {
-                if (apartment.getNumber() == numberOfApartment) {
-                    residentName = apartment.getResident().getName();
-                    break;
-                }
-            } catch (NullPointerException e) {
-                residentName = "В квартире никто не живет";
+        for (Apartment apartment : apartments) {
+            if (apartment.getNumber() == numberOfApartment && apartment.getTryResident()) {
+                return apartment.getResident().getName();
             }
-        return residentName;
+        }
+        throw new RuntimeException("В квартире никто не живет");
     }
 
-    public Apartment[] sortsApartmentsBySquare(Apartment[] apartments) {
-        if (apartments.length < 2) {
+    public ArrayList<Apartment> sortsApartmentsBySquare(ArrayList<Apartment> apartments) {
+        if (apartments.size() < 2) {
             return apartments;
         }
-        for (int i = apartments.length - 1; i > 0; i--) {
+        for (int i = apartments.size() - 1; i > 0; i--) {
             for (int j = 0; j < i; j++) {
-                if (apartments[j].apartmentsSquare() < apartments[j + 1].apartmentsSquare()) {
-                    Apartment apartment1 = apartments[j];
-                    apartments[j] = apartments[j + 1];
-                    apartments[j + 1] = apartment1;
+                if (apartments.get(j).apartmentsSquare() < apartments.get(j + 1).apartmentsSquare()) {
+                    Apartment apartment1 = apartments.get(j);
+                    apartments.set(j, apartments.get(j + 1));
+                    apartments.set(j + 1, apartment1);
                 }
             }
         }
         return apartments;
     }
 
-    public Resident[] sortResidentsByMoney(Resident[] residents) {
-        if (residents.length < 2) {
+    public ArrayList<Resident> sortResidentsByMoney(ArrayList<Resident> residents) {
+        if (residents.size() < 2) {
             return residents;
         }
-        for (int i = residents.length - 1; i > 0; i--) {
+        for (int i = residents.size() - 1; i > 0; i--) {
             for (int j = 0; j < i; j++) {
-                if (residents[j].getMoney() < residents[j + 1].getMoney()) {
-                    Resident resident = residents[j];
-                    residents[j] = residents[j + 1];
-                    residents[j + 1] = resident;
+                if (residents.get(j).getMoney() < residents.get(j + 1).getMoney()) {
+                    Resident resident = residents.get(j);
+                    residents.set(j, residents.get(j + 1));
+                    residents.set(j + 1, resident);
                 }
             }
         }
         return residents;
     }
 
-    public Resident[] moveInResidents(Resident[] residents) {
-        Apartment[] sortingApartments = sortsApartmentsBySquare(apartments);
-        Resident[] sortingResidents = sortResidentsByMoney(residents);
-        int i = 0;
+    public ArrayList<Resident> moveInResidents(ArrayList<Resident> residents) {
+        ArrayList<Apartment> sortingApartments = sortsApartmentsBySquare(apartments);
+        ArrayList<Resident> sortingResidents = sortResidentsByMoney(residents);
+
         for (Apartment apartment : sortingApartments) {
-            if (apartment.getResident() == null) {
-                if (i >= sortingResidents.length) {
+            if (!apartment.getTryResident()) {
+                if (sortingResidents.size() < 0) {
                     break;
                 }
-                apartment.moveInResident(sortingResidents[i]);
-                i++;
+                apartment.moveInResident(sortingResidents.get(0));
+                sortingResidents.remove(0);
             }
         }
 
-        return Arrays.copyOfRange(sortingResidents, i, sortingResidents.length);
+        return sortingResidents;
     }
 
     public void addsApartment(Apartment apartment) {
-        apartments = Arrays.copyOfRange(apartments, 0, apartments.length + 1);
-        apartments[apartments.length - 1] = apartment;
-
+        apartments.add(apartment);
     }
 
     public double priseOfApartment(double square) {
@@ -104,14 +95,15 @@ public class Building {
     public double collectMoney() {
         double money = 0;
         for (Apartment apartment : apartments) {
-            if (apartment.getResident() != null) {
-                if (apartment.getResident().getMoney() < priseOfApartment(apartment.apartmentsSquare())) {
+            if (apartment.getTryResident()) {
+                double price = priseOfApartment(apartment.apartmentsSquare());
+                if (apartment.getResident().getMoney() < price) {
                     money += apartment.getResident().getMoney();
                     apartment.getResident().setMoney(apartment.getResident().getMoney());
                     apartment.moveOutResident();
                 } else {
-                    apartment.getResident().setMoney(priseOfApartment(apartment.apartmentsSquare()));
-                    money += priseOfApartment(apartment.apartmentsSquare());
+                    apartment.getResident().setMoney(price);
+                    money += price;
                 }
             }
         }
